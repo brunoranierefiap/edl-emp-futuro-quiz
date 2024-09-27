@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Empreendedor do Futuro - Quiz</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            transition: background-color 0.5s ease;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 30px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 5px;
+        }
+        img {
+            border-radius: 25px;
+            margin-top: 30px;
+        }
+        input {
+            display: block;
+            padding: 5px;
+            margin: auto;
+            width: 98%;
+            margin-top: 10px;
+            border: none;
+            border-bottom: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .question {
+            display: none;
+        }
+        .result {
+            display: none;
+            font-size: 1.2em;
+            /* color: #4CAF50; */
+        }
+        button {
+            background-color: #0337B6;
+            color: white;
+            padding: 10px 20px;
+            width: 100%;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 10px;
+            transition: transform 0.2s ease;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #2A55D4;
+        }
+        button:active {
+            transform: scale(0.95);
+            background-color: #022B8A;
+        }
+        .loading {
+            display: none;
+            font-size: 1.2em;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Quiz</h1>
+        <h2>Descubra Sua Profissão Digital do Futuro!</h2>
+        
+        <div class="progress-bar">
+            <div class="progress"></div>
+        </div>
+
+        <div id="quiz">
+            <div class="question" id="q1">
+                <p>Você prefere trabalhar mais diretamente com pessoas ou com ferramentas e sistemas?</p>
+                <button data-next="q2" data-value="people">Pessoas</button>
+                <button data-next="q2" data-value="tools">Ferramentas e sistemas</button>
+            </div>
+            <div class="question" id="q2">
+                <p>Você se sente mais motivado ao criar estratégias de vendas ou ao desenvolver algo funcional e visual?</p>
+                <button data-next="q3" data-value="sales">Estratégias de vendas</button>
+                <button data-next="q3" data-value="functional">Desenvolver algo funcional e visual</button>
+            </div>
+            <div class="question" id="q3">
+                <p>Você prefere trabalhar com números e métricas ou com ideias criativas?</p>
+                <button data-next="q4" data-value="metrics">Números e métricas</button>
+                <button data-next="q4" data-value="creative">Ideias criativas</button>
+            </div>
+            <div class="question" id="q4">
+                <p>Você se sente mais realizado ao entender o comportamento dos consumidores ou ao automatizar processos?</p>
+                <button data-next="q5" data-value="behavior">Entender comportamento</button>
+                <button data-next="q5" data-value="automation">Automatizar processos</button>
+            </div>
+            <div class="question" id="q5">
+                <p>Você prefere otimizar campanhas publicitárias ou criar vídeos impactantes?</p>
+                <button data-next="q6" data-value="campaigns">Otimizar campanhas</button>
+                <button data-next="q6" data-value="videos">Criar vídeos</button>
+            </div>
+            <div class="question" id="q6">
+                <p>Você prefere lidar com a produção de vídeos criativos ou com a automação de processos?</p>
+                <button data-next="q7" data-value="videos">Produção de vídeos criativos</button>
+                <button data-next="q7" data-value="automation">Automação de processos</button>
+            </div>
+            <div class="question" id="q7">
+                <p>Você gosta mais de realizar testes de vendas ou de criar ferramentas sem precisar programar?</p>
+                <button data-next="q8" data-value="sales">Testes de vendas</button>
+                <button data-next="q8" data-value="nocode">Criar ferramentas sem programar</button>
+            </div>
+            <div class="question" id="q8">
+                <p>Você prefere interagir diretamente com clientes para aumentar conversões ou configurar sistemas para automatizar tarefas?</p>
+                <button data-next="q9" data-value="clients">Interagir com clientes</button>
+                <button data-next="q9" data-value="systems">Configurar sistemas para automatizar tarefas</button>
+            </div>
+            <div class="question" id="q9">
+                <p>Você prefere trabalhar com campanhas de marketing ou desenvolver soluções digitais visuais?</p>
+                <button data-next="q10" data-value="marketing">Campanhas de marketing</button>
+                <button data-next="q10" data-value="visual">Soluções digitais visuais</button>
+            </div>
+            <div class="question" id="q10">
+                <p>Você se sente mais confortável ao planejar campanhas de longo prazo ou ao desenvolver algo rápido e funcional?</p>
+                <button data-next="result" data-value="campaigns">Planejar campanhas</button>
+                <button data-next="result" data-value="functional">Desenvolver algo rápido e funcional</button>
+            </div>
+        </div>
+
+        <div class="loading" id="loading">
+            <p>Calculando seu resultado...</p>
+        </div>
+
+        <div class="result" id="result">
+            <p id="resultText"></p>
+            <button onclick="location.reload();">Continuar</button>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Mostrar a primeira pergunta
+            $("#q1").fadeIn(300);
+    
+            // Variável para armazenar respostas
+            let answers = {};
+            let totalQuestions = 10;
+            let currentQuestion = 1;
+            let userName = ""; // Armazena o nome do usuário
+            let userPhone = ""; // Armazena o número de telefone do usuário
+    
+            // Função para calcular o resultado com base nas respostas
+            function getResultBasedOnAnswers(answers) {
+                // Lógica para determinar os resultados com base nas respostas
+                let videoMakerCount = 0;
+                let socialSellingCount = 0;
+                let gestorTrafegoCount = 0;
+                let automacaoCount = 0;
+                let devNoCodeCount = 0;
+    
+                // Contabilizando as respostas para cada profissão
+                if (answers.q1 === "people") {
+                    socialSellingCount++;
+                    videoMakerCount++;
+                } else if (answers.q1 === "tools") {
+                    devNoCodeCount++;
+                    automacaoCount++;
+                    gestorTrafegoCount++;
+                }
+    
+                if (answers.q2 === "sales") {
+                    socialSellingCount++;
+                    gestorTrafegoCount++;
+                } else if (answers.q2 === "functional") {
+                    videoMakerCount++;
+                    devNoCodeCount++;
+                }
+    
+                if (answers.q3 === "metrics") {
+                    gestorTrafegoCount++;
+                    automacaoCount++;
+                } else if (answers.q3 === "creative") {
+                    videoMakerCount++;
+                    socialSellingCount++;
+                    devNoCodeCount++;
+                }
+    
+                if (answers.q4 === "behavior") {
+                    socialSellingCount++;
+                    gestorTrafegoCount++;
+                } else if (answers.q4 === "automation") {
+                    automacaoCount++;
+                    devNoCodeCount++;
+                }
+    
+                if (answers.q5 === "campaigns") {
+                    gestorTrafegoCount++;
+                } else if (answers.q5 === "videos") {
+                    videoMakerCount++;
+                }
+    
+                if (answers.q6 === "videos") {
+                    videoMakerCount++;
+                } else if (answers.q6 === "automation") {
+                    automacaoCount++;
+                }
+    
+                if (answers.q7 === "sales") {
+                    socialSellingCount++;
+                } else if (answers.q7 === "nocode") {
+                    devNoCodeCount++;
+                }
+    
+                if (answers.q8 === "clients") {
+                    socialSellingCount++;
+                } else if (answers.q8 === "systems") {
+                    automacaoCount++;
+                }
+    
+                if (answers.q9 === "marketing") {
+                    gestorTrafegoCount++;
+                } else if (answers.q9 === "visual") {
+                    devNoCodeCount++;
+                }
+    
+                if (answers.q10 === "campaigns") {
+                    gestorTrafegoCount++;
+                    socialSellingCount++;
+                } else if (answers.q10 === "functional") {
+                    devNoCodeCount++;
+                    automacaoCount++;
+                }
+    
+                // Determinar o resultado com base na maior contagem
+                let maxCount = Math.max(videoMakerCount, socialSellingCount, gestorTrafegoCount, automacaoCount, devNoCodeCount);
+    
+                if (videoMakerCount === maxCount) {
+                    resultText = `${userName}, uma boa sugestão para você seria: <br><strong style="font-size: 18px;">Video Maker</strong>`;
+                    imgSrc = "images/profissao-video-maker.jpeg"; // Caminho para a imagem de Video Maker
+                } else if (socialSellingCount === maxCount) {
+                    resultText = `${userName}, uma boa sugestão para você seria: <br><strong style="font-size: 18px;">Social Selling</strong>`;
+                    imgSrc = "images/profissao-social-selling.jpeg"; // Caminho para a imagem de Social Selling
+                } else if (gestorTrafegoCount === maxCount) {
+                    resultText = `${userName}, uma boa sugestão para você seria: <br><strong style="font-size: 18px;">Gestor de Tráfego Pago</strong>`;
+                    imgSrc = "images/profissao-gestao-trafego.jpeg"; // Caminho para a imagem de Gestor de Tráfego
+                } else if (automacaoCount === maxCount) {
+                    resultText = `${userName}, uma boa sugestão para você seria: <br><strong style="font-size: 18px;">Especialista em Automação com IA</strong>`;
+                    imgSrc = "images/profissao-especialista-ia.jpeg"; // Caminho para a imagem de Automação com IA
+                } else if (devNoCodeCount === maxCount) {
+                    resultText = `${userName}, uma boa sugestão para você seria: <br><strong style="font-size: 18px;">Desenvolvedor de Software No-Code</strong>`;
+                    imgSrc = "images/profissao-dev-no-code.jpeg"; // Caminho para a imagem de Desenvolvedor No-Code
+                } else {
+                    resultText = `${userName}, uma boa sugestão para você seria explorar várias áreas! <br><strong style="font-size: 18px;">Diversas Habilidades</strong>`;
+                    imgSrc = "images/profissao-default.jpeg"; // Caminho para uma imagem padrão
+                }
+
+                // Exibe o resultado, a imagem e a mensagem com o asterisco
+                // Exibe o resultado, a imagem e a mensagem com o asterisco
+                $("#resultText").html(`
+                    <div style="text-align: center;">
+                        ${resultText}<br>
+                        <img src="${imgSrc}" alt="Resultado" style="max-width: 100%; margin-top: 10px;"/>
+                        <p style="font-size: 12px; color: gray;">* Tire um print e marque @escoladeleads no Instagram</p>
+                    </div>
+                `);
+
+                // Remove qualquer botão anterior para evitar duplicação
+                $("#result button").remove();
+
+                // Adiciona o botão "Continuar" uma única vez
+                $("#result").append('<button id="continueButton" style="margin-top: 20px;">Continuar</button>');
+
+                // Ao clicar no botão "Continuar", exibe a nova sessão de explicação das profissões
+                $("#continueButton").click(function() {
+                    // Esconde o resultado anterior
+                    $("#result").fadeOut(300, function() {
+                        // Mostra a nova sessão com as explicações das profissões dentro da div.container
+                        let professionsSection = `
+                            <div id="professionsSection" style="text-align: center;">
+                                <h2>Descubra mais sobre as profissões!</h2>
+                                
+                                <p><strong>Desenvolvedor de Software No-Code</strong><br>
+                                Crie aplicativos e sistemas sem a necessidade de codificação profunda, utilizando ferramentas visuais e plataformas intuitivas.</p>
+                                
+                                <p><strong>Especialista em Automação com IA</strong><br>
+                                Integre e automatize processos usando Inteligência Artificial para aumentar a eficiência e melhorar a tomada de decisões.</p>
+                                
+                                <p><strong>Social Selling</strong><br>
+                                Utilize redes sociais para interagir com clientes, criar conexões e transformar relacionamentos em vendas.</p>
+                                
+                                <p><strong>Video Maker</strong><br>
+                                Produza vídeos criativos e de alta qualidade para marketing, redes sociais e outras plataformas digitais.</p>
+                                
+                                <p><strong>Gestor de Tráfego Pago</strong><br>
+                                Planeje e gerencie campanhas de anúncios pagos para otimizar o tráfego e aumentar as conversões em diversas plataformas.</p>
+                                
+                                <h3>Qual profissão você tem mais interesse?</h3>
+                                <button class="profession-button" data-profession="Dev No-Code">Desenvolvedor No-Code</button>
+                                <button class="profession-button" data-profession="Automação com IA">Especialista em Automação com IA</button>
+                                <button class="profession-button" data-profession="Social Selling">Social Selling</button>
+                                <button class="profession-button" data-profession="Video Maker">Video Maker</button>
+                                <button class="profession-button" data-profession="Gestor de Tráfego">Gestor de Tráfego Pago</button>
+                            </div>
+                        `;
+                        
+                        // Adiciona a nova sessão dentro da div.container
+                        $(".container").append(professionsSection);
+
+                        // Animação para exibir a nova sessão
+                        $("#professionsSection").fadeIn(300);
+                    });
+                });
+
+                // Remova qualquer evento click anterior e adicione o evento de clique uma única vez
+                $("body").off("click", ".profession-button").on("click", ".profession-button", function() {
+                    let selectedProfession = $(this).data("profession");
+
+                    // Loga as informações no console
+                    let tempDiv = document.createElement("div");
+                    tempDiv.innerHTML = resultText;
+                    let suggestedProfession = tempDiv.querySelector("strong").innerText;
+
+                    console.log("Nome:", userName);
+                    console.log("Telefone:", userPhone);
+                    console.log("Profissão sugerida:", suggestedProfession);
+                    console.log("Profissão escolhida:", selectedProfession);
+
+                    // Redireciona para a página de agradecimento
+                    $("body").html(`
+                        <div class="container" style="text-align: center; padding: 20px;">
+                            <h2>Obrigado por participar!</h2>
+                            <p>Você escolheu a profissão: <strong>${selectedProfession}</strong></p>
+                            <button onclick="location.reload();" style="margin-top: 20px;">Voltar ao início</button>
+                        </div>
+                    `);
+                });
+            }
+    
+            // Quando um botão é clicado
+            $("button").click(function() {
+                let nextQuestion = $(this).data("next");
+                let value = $(this).data("value");
+    
+                // Armazena a resposta
+                answers[$(this).parent().attr("id")] = value;
+    
+                // Verifica se é após a pergunta 2, então solicita o nome
+                if ($(this).parent().attr("id") === "q2") {
+                    // Exibe o campo de entrada para o nome
+                    let namePrompt = `
+                        <div class="question" id="nameInput">
+                            <p>Como devo te chamar</p>
+                            <input type="text" id="userNameInput" placeholder="Nome ou apelido" />
+                            <button id="submitName">Enviar</button>
+                        </div>
+                    `;
+                    $(this).parent().after(namePrompt);
+    
+                    // Esconde a pergunta atual e mostra o campo de nome
+                    $(this).parent().fadeOut(300, function() {
+                        $("#nameInput").fadeIn(300);
+                    });
+    
+                    // Aguardar o envio do nome antes de continuar
+                    $("#submitName").click(function() {
+                        userName = $("#userNameInput").val(); // Armazena o nome
+                        if (userName !== "") {
+                            $("#nameInput").fadeOut(300, function() {
+                                $("#" + nextQuestion).fadeIn(300);
+                            });
+                        } else {
+                            // alert("Por favor, insira um nome.");
+                        }
+                    });
+    
+                } else if ($(this).parent().attr("id") === "q6") {
+                    // Exibe o campo de entrada para o telefone após a pergunta 6
+                    let phonePrompt = `
+                        <div class="question" id="phoneInput">
+                            <p>Que bom que chegou até aqui, qual seu telefone?</p>
+                            <input type="text" id="userPhoneInput" placeholder="Ex: 84999999999" />
+                            <button id="submitPhone">Enviar</button>
+                        </div>
+                    `;
+                    $(this).parent().after(phonePrompt);
+    
+                    // Esconde a pergunta atual e mostra o campo de telefone
+                    $(this).parent().fadeOut(300, function() {
+                        $("#phoneInput").fadeIn(300);
+                    });
+    
+                    // Aguardar o envio do telefone antes de continuar
+                    $("#submitPhone").click(function() {
+                        userPhone = $("#userPhoneInput").val(); // Armazena o telefone
+                        if (userPhone !== "") {
+                            $("#phoneInput").fadeOut(300, function() {
+                                $("#" + nextQuestion).fadeIn(300);
+                            });
+                        } else {
+                            // alert("Por favor, insira um número de telefone válido.");
+                        }
+                    });
+    
+                } else {
+                    // Atualiza a barra de progresso
+                    currentQuestion++;
+                    let progressPercentage = (currentQuestion / totalQuestions) * 100;
+                    $(".progress").css("width", progressPercentage + "%");
+    
+                    // Esconde a pergunta atual com animação
+                    $(this).parent().fadeOut(300, function() {
+                        // Se for a última pergunta, mostrar o carregamento e resultado
+                        if (nextQuestion === "result") {
+                            $("#quiz").hide();
+                            $("#loading").fadeIn(300);
+    
+                            setTimeout(function() {
+                                $("#loading").hide();
+                                let result = getResultBasedOnAnswers(answers);
+                                $("#resultText").text(result);
+                                $("#result").fadeIn(300);
+                            }, 2000); // Simula o tempo de carregamento
+                        } else {
+                            $("#" + nextQuestion).fadeIn(300);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
