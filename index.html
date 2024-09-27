@@ -148,6 +148,25 @@
     </div>
 
     <script>
+        // Função para enviar dados para o Google Sheets via Google Apps Script
+        function enviarDadosParaGoogleSheets(nome, telefone, profissao_sugerida, interesse) {
+            const url = "https://script.google.com/macros/s/AKfycbwK62eSnzLNG9ZpuOyjcNXUNQ447HiSjRktfg64A62voBKC0HMzLuR56OJKkDHYd0oRMA/exec"
+                + "?nome=" + encodeURIComponent(nome)
+                + "&telefone=" + encodeURIComponent(telefone)
+                + "&profissao_sugerida=" + encodeURIComponent(profissao_sugerida)
+                + "&interesse=" + encodeURIComponent(interesse);
+
+            fetch(url, {
+                method: 'GET',
+                mode: 'no-cors', // Continua necessário para evitar erros de CORS
+            })
+            .then(response => {
+                console.log("Dados enviados com sucesso!");
+            })
+            .catch(error => {
+                console.error("Erro ao enviar os dados: ", error);
+            });
+        }
         $(document).ready(function() {
             // Mostrar a primeira pergunta
             $("#q1").fadeIn(300);
@@ -322,6 +341,7 @@
                 });
 
                 // Remova qualquer evento click anterior e adicione o evento de clique uma única vez
+                // Remova qualquer evento click anterior e adicione o evento de clique uma única vez
                 $("body").off("click", ".profession-button").on("click", ".profession-button", function() {
                     let selectedProfession = $(this).data("profession");
 
@@ -334,6 +354,9 @@
                     console.log("Telefone:", userPhone);
                     console.log("Profissão sugerida:", suggestedProfession);
                     console.log("Profissão escolhida:", selectedProfession);
+
+                    // Envia os dados para o Google Sheets
+                    enviarDadosParaGoogleSheets(userName, userPhone, suggestedProfession, selectedProfession);
 
                     // Redireciona para a página de agradecimento
                     $("body").html(`
